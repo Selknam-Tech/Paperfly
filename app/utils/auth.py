@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import request
+from flask import request, jsonify
 import os
 
 BEARER_TOKEN = os.environ.get('BEARER_TOKEN', 'tu_token_estatico_secreto')

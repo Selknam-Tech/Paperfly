@@ -1,14 +1,6 @@
 from datetime import datetime
 from app import db
 
-class APIKey(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String(120), unique=True, nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
-    def __repr__(self):
-        return f"APIKey('{self.key}', '{self.created_at}')"
-
 class NotebookJob(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     input_notebook = db.Column(db.String, nullable=False)

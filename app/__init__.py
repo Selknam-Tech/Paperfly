@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from utils.paperfly_encryption import create_config_with_encryption_key
+from app.utils.key_generator import create_config_with_keys
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -10,7 +10,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object('config')
 
-    create_config_with_encryption_key()
+    create_config_with_keys()
 
     db.init_app(app)
     migrate.init_app(app, db)
