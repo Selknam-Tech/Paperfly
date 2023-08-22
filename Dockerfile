@@ -10,7 +10,7 @@ COPY requirements.txt .
 # Install the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the current directory contents into the container
+# Copy the current directory contents into the container 
 COPY . .
 
 # Expose the port the app runs on
