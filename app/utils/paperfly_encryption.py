@@ -1,5 +1,5 @@
 from cryptography.fernet import Fernet
-from key_generator import load_encryption_key_from_yaml
+from .key_generator import load_encryption_key_from_yaml
 
 def encrypt_content(content):
     key = load_encryption_key_from_yaml()

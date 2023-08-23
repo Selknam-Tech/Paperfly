@@ -16,6 +16,10 @@ def create_app():
     migrate.init_app(app, db)
 
     # Registra el blueprint
+    from app.main import bp as main_execution_bp
+    app.register_blueprint(main_execution_bp, url_prefix='/')
+
+    # Registra el blueprint
     from app.notebook_execution import bp as notebook_execution_bp
     app.register_blueprint(notebook_execution_bp, url_prefix='/notebook')
 

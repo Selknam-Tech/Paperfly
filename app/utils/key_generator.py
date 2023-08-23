@@ -1,16 +1,16 @@
 import os
 import yaml
 from cryptography.fernet import Fernet
-from flask import current_app
+import config
 
-KEYS_DIR = f"{current_app.app_context().config['WORKSPACE']}/.paperfly_keys"
+KEYS_DIR = f"{config.WORKSPACE}/.paperfly_keys"
 KEYS_FILE = "keys.yaml"
 KEY_FIELD = "encryption_key"
 TOKEN_FIELD = "bearer_token"
 
 def ensure_keys_dir_exists():
     if not os.path.exists(KEYS_DIR):
-        os.mkdir(KEYS_DIR)
+        os.makedirs(KEYS_DIR, exist_ok=True)
 
 def generate_encryption_key():
     return Fernet.generate_key().decode()
@@ -41,3 +41,8 @@ def create_config_with_keys():
         encryption_key = generate_encryption_key()
         bearer_token = generate_bearer_token()
         save_keys_to_yaml(encryption_key, bearer_token)
+
+if __name__ == "__main__":
+    # Si este script se ejecuta como un script independiente, generará el yaml con las claves.
+    create_config_with_keys()
+    print(f"Encryption Key and Bearer Token saved in {KEYS_FILE}.")
