@@ -1,8 +1,22 @@
+import yaml
 from functools import wraps
-from flask import request, jsonify
+from flask import request, jsonify, current_app
 import os
 
-BEARER_TOKEN = os.environ.get('BEARER_TOKEN', 'tu_token_estatico_secreto')
+
+# Configuración del archivo y ruta
+CONFIG_DIR = "f'{current_app.config['WORKSPACE']}/.paperfly_key/"
+CONFIG_FILE = "keys.yaml"
+TOKEN_FIELD = "bearer_token"
+
+# Función para cargar el bearer token desde el archivo YAML
+def load_bearer_token_from_yaml():
+    with open(os.path.join(CONFIG_DIR, CONFIG_FILE), 'r') as file:
+        config = yaml.safe_load(file)
+        return config.get(TOKEN_FIELD)
+
+# Intenta obtener el bearer token desde el archivo YAML o utiliza el valor por defecto.
+BEARER_TOKEN = load_bearer_token_from_yaml() or os.environ.get('BEARER_TOKEN', 'miss_token')
 
 def require_token(f):
     @wraps(f)
