@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 5000
 
 # Define the command to run the application using gunicorn
-CMD ["gunicorn", "app:app", "-b", "0.0.0.0:5000", "--workers=3", "--log-level=info"]
+CMD ["gunicorn", "app:create_app()", "-b", "0.0.0.0:5000", "--workers=3", "--log-level=info"]
