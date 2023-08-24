@@ -5,7 +5,7 @@ import os
 
 
 # Configuración del archivo y ruta
-CONFIG_DIR = "f'{current_app.config['WORKSPACE']}/.paperfly_key/"
+CONFIG_DIR = f"{current_app.config['WORKSPACE']}/.paperfly_key/"
 CONFIG_FILE = "keys.yaml"
 TOKEN_FIELD = "bearer_token"
 
