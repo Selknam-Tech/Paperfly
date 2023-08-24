@@ -1,4 +1,5 @@
 from app import create_app, db
+import logging
 
 app = create_app()
 

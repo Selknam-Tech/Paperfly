@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from app.utils.key_generator import create_config_with_keys
+import logging
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -9,8 +10,9 @@ migrate = Migrate()
 def create_app():
     app = Flask(__name__)
     app.config.from_object('config')
-
-    create_config_with_keys()
+    app.logger.addHandler(logging.StreamHandler())
+    app.logger.setLevel(logging.INFO)
+    create_config_with_keys(logger=app.logger)
 
     db.init_app(app)
     migrate.init_app(app, db)
