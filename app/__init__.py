@@ -12,6 +12,7 @@ def create_app():
     app.config.from_object('config')
     app.logger.addHandler(logging.StreamHandler())
     app.logger.setLevel(logging.INFO)
+    app.logger.info('Paperfly Start v0.1.2')
     create_config_with_keys(logger=app.logger)
 
     db.init_app(app)

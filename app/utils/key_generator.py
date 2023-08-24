@@ -38,11 +38,12 @@ def load_bearer_token_from_yaml():
 def config_exists():
     return os.path.exists(os.path.join(KEYS_DIR, KEYS_FILE))
 
-def create_config_with_keys(logger : logging.Logger):
+def create_config_with_keys(logger : logging.Logger = None):
     if not config_exists():
         encryption_key = generate_encryption_key()
         bearer_token = generate_bearer_token()
-        logger.info(f'Bearer: {bearer_token}')
+        if logger:
+            logger.info(f'Bearer: {bearer_token}')
 
         save_keys_to_yaml(encryption_key, bearer_token)
 
