@@ -5,9 +5,10 @@ import os
 
 
 # Configuración del archivo y ruta
-CONFIG_DIR = f"{current_app.config['WORKSPACE']}/.paperfly_key/"
-CONFIG_FILE = "keys.yaml"
-TOKEN_FIELD = "bearer_token"
+with current_app.app_context():
+    CONFIG_DIR = os.path.join('../',current_app.root_path,current_app.config['WORKSPACE'],'.paperfly_keys')
+    CONFIG_FILE = "keys.yaml"
+    TOKEN_FIELD = "bearer_token"
 
 # Función para cargar el bearer token desde el archivo YAML
 def load_bearer_token_from_yaml():

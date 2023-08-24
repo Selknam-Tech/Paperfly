@@ -3,12 +3,12 @@ import yaml
 from cryptography.fernet import Fernet
 import config
 import logging
-import sys
 
-KEYS_DIR = f"{config.WORKSPACE}/.paperfly_keys"
+KEYS_DIR =  None
 KEYS_FILE = "keys.yaml"
 KEY_FIELD = "encryption_key"
 TOKEN_FIELD = "bearer_token"
+
 
 def ensure_keys_dir_exists():
     if not os.path.exists(KEYS_DIR):
@@ -38,7 +38,10 @@ def load_bearer_token_from_yaml():
 def config_exists():
     return os.path.exists(os.path.join(KEYS_DIR, KEYS_FILE))
 
-def create_config_with_keys(logger : logging.Logger = None):
+def create_config_with_keys(logger : logging.Logger = None, root_path : str = ""):
+    global KEYS_DIR
+    KEYS_DIR = os.path.join(root_path,config.WORKSPACE,'.paperfly_keys')
+
     if not config_exists():
         encryption_key = generate_encryption_key()
         bearer_token = generate_bearer_token()
