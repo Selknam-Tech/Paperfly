@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from app.utils.key_generator import create_config_with_keys
 import logging
 import os
-from .models import NotebookJob, Repository
+import app.models
 
 db = SQLAlchemy()
 migrate = Migrate()
