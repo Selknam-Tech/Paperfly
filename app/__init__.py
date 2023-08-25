@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from app.utils.key_generator import create_config_with_keys
 import logging
 import os
-import app
+from .models import NotebookJob, Repository
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -21,6 +21,8 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
+    app.app_context().push()
+
     with app.app_context():
         app.logger.info('Crea la base de datos')
         db.create_all()
@@ -28,7 +30,6 @@ def create_app():
     app.logger.addHandler(logging.StreamHandler())
     app.logger.setLevel(logging.INFO)
     app.logger.info('Paperfly Start v0.1.2')
-    app.app_context().push()
     create_config_with_keys(logger=app.logger, root_path=app.root_path)
 
     # Registra el blueprint
@@ -44,8 +45,3 @@ def create_app():
     app.register_blueprint(repo_bp, url_prefix='/repo')
 
     return app
-
-@app.before_first_request
-def create_tables():
-    app.logger.info('Crea la base de datos before first request')
-    db.create_all()
