@@ -16,8 +16,6 @@ RUN pip install -r requirements.txt
 # Copy the current directory contents into the container
 COPY . .
 
-# Copy the entrypoint script into the container
-COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 

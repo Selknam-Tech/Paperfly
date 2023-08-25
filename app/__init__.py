@@ -19,6 +19,7 @@ def create_app():
     migrate.init_app(app, db)
 
     with app.app_context():
+        app.logger.info('Crea la base de datos')
         db.create_all()
 
     app.logger.addHandler(logging.StreamHandler())
