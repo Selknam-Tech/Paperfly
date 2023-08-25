@@ -2,15 +2,16 @@ from app import db
 from app.models import NotebookJob
 from app.notebook_execution import bp
 import papermill as pm
-from flask import request, jsonify
+from flask import request, jsonify, current_app
 from app.utils.auth import require_token
+import os
 
 @bp.route('/execute-notebook', methods=['POST'])
 @require_token
 def execute_notebook():
     data = request.get_json()
-    input_notebook = data.get('input_notebook')
-    output_notebook = data.get('output_notebook')
+    input_notebook = os.path.join(current_app.config['BASE_WORKSPACE'],data.get('input_notebook'))
+    output_notebook =os.path.join(current_app.config['BASE_WORKSPACE'],data.get('output_notebook')) 
     parameters = data.get('parameters', {})
 
     if not input_notebook or not output_notebook:

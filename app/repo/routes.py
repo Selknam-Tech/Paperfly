@@ -16,8 +16,8 @@ def clone_repo():
 
     # Asegurarse de que la carpeta 'repos' exista y ajustar el local_path
     if not os.path.exists('repos'):
-        os.makedirs(f'{current_app.config["WORKSPACE"]}/repos')
-    full_local_path = os.path.join('repos', local_path)
+        os.makedirs(f'{current_app.config["BASE_WORKSPACE"]}/repos')
+    full_local_path = os.path.join({current_app.config["BASE_WORKSPACE"]}, local_path)
 
     repo_record = Repository.query.filter_by(url=url).first()
 
@@ -80,15 +80,16 @@ def get_repositories():
 def clone_or_pull_repo():
     data = request.get_json()
     url = data.get('url')
-    local_path = data.get('local_path')
+    default_local_path = url.rstrip('/').split('/')[-1].split('.')[0]
+    local_path = data.get('local_path',default_local_path)
     username = data.get('username', None)
     password = data.get('password', None)
     branch = data.get('branch', 'master')  # Por defecto usará la rama master si no se proporciona
 
-    # Asegurarse de que la carpeta 'repos' exista y ajustar el local_path
+    # Asegurarse de que la carpeta 'repos' exista y ajustar el local_path f'{current_app.config["WORKSPACE"]}/repos
     if not os.path.exists('repos'):
-        os.makedirs(f'{current_app.config["WORKSPACE"]}/repos')
-    full_local_path = os.path.join('repos', local_path)
+        os.makedirs(os.path.join(current_app.config['BASE_WORKSPACE'],'repos'), exist_ok=True)
+    full_local_path = os.path.join(current_app.config['BASE_WORKSPACE'], 'repos', local_path)
 
     repo_record = Repository.query.filter_by(url=url).first()
 
