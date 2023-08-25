@@ -7,7 +7,6 @@ WORKDIR /app
 # Copy the requirements file into the container
 COPY requirements.txt .
 
-
 # Install Git
 RUN apt-get update && apt-get install -y git
 
@@ -17,10 +16,16 @@ RUN pip install -r requirements.txt
 # Copy the current directory contents into the container
 COPY . .
 
+# Copy the entrypoint script into the container
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-ENV PYTHONUNBUFFERED=TRUEs
+
+# Establece la variable de entorno para el proceso de inicialización
+ENV INIT_PROCESS true
+
 # Expose the port the app runs on
 EXPOSE 5000
 
-# Define the command to run the application using gunicorn
-CMD ["gunicorn", "app:create_app()", "-b", "0.0.0.0:5000", "--workers=3",  "--log-level=info"]
+# Define the entrypoint script to run
+ENTRYPOINT ["/app/entrypoint.sh"]

@@ -49,6 +49,8 @@ def create_config_with_keys(logger : logging.Logger = None, root_path : str = ""
             logger.info(f'Bearer: {bearer_token}')
 
         save_keys_to_yaml(encryption_key, bearer_token)
+    else:
+        logger.info('API Keys already created.')
 
 if __name__ == "__main__":
     # Si este script se ejecuta como un script independiente, generará el yaml con las claves.
