@@ -15,6 +15,8 @@ def create_app():
     app.config['BASE_WORKSPACE'] = os.path.join(app.root_path, app.config['WORKSPACE']); 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.config['BASE_WORKSPACE'], 'app.sqlite')
 
+    os.makedirs(os.path.join(app.config['BASE_WORKSPACE']),exist_ok=True)
+
     db.init_app(app)
     migrate.init_app(app, db)
 
