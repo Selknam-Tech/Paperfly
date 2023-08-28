@@ -34,7 +34,7 @@ def create_app():
 
     app.logger.addHandler(logging.StreamHandler())
     app.logger.setLevel(logging.INFO)
-    with open('version.txt', 'r') as file:
+    with open(os.path.join(app.config['BASE_WORKSPACE'],'version.txt'), 'r') as file:
         run_number = file.read().strip()
         app.logger.info('Paperfly Start - v0.1.4 | ' + run_number)
 
