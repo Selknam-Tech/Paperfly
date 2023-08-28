@@ -19,6 +19,9 @@ def create_app():
 
     os.makedirs(os.path.join(app.config['BASE_WORKSPACE']),exist_ok=True)
 
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+
     db.init_app(app)
     migrate.init_app(app, db)
 
@@ -31,7 +34,10 @@ def create_app():
 
     app.logger.addHandler(logging.StreamHandler())
     app.logger.setLevel(logging.INFO)
-    app.logger.info('Paperfly Start v0.1.2')
+    with open('version.txt', 'r') as file:
+        run_number = file.read().strip()
+        app.logger.info('Paperfly Start - v0.1.4 | ' + run_number)
+
     create_config_with_keys(logger=app.logger, root_path=app.root_path)
 
     # Registra el blueprint
