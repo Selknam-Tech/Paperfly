@@ -1,5 +1,5 @@
 from datetime import datetime
-from app import db
+from paperfly import db
 
 class NotebookJob(db.Model):
     id = db.Column(db.Integer, primary_key=True)

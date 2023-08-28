@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from app.main import bp
+from paperfly.main import bp
 
 class MainResource(Resource):
     def get(self):

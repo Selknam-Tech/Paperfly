@@ -1,9 +1,9 @@
-from app import db
-from app.models import NotebookJob
-from app.notebook_execution import bp
+from paperfly import db
+from paperfly.models import NotebookJob
+from paperfly.notebook_execution import bp
 import papermill as pm
 from flask import request, jsonify, current_app
-from app.utils.auth import require_token
+from paperfly.utils.auth import require_token
 import os
 
 @bp.route('/execute-notebook', methods=['POST'])

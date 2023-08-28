@@ -1,5 +1,4 @@
-from app import create_app, db
-import logging
+from paperfly import create_app, db
 
 app = create_app()
 

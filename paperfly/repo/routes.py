@@ -1,10 +1,10 @@
 import os
 from git import Repo
 from flask import request, jsonify, current_app
-from app import db
-from app.models import Repository
-from app.repo import bp
-from app.utils.paperfly_encryption import encrypt_content, decrypt_content
+from paperfly import db
+from paperfly.models import Repository
+from paperfly.repo import bp
+from paperfly.utils.paperfly_encryption import encrypt_content, decrypt_content
 
 @bp.route('/clone', methods=['POST'])
 def clone_repo():

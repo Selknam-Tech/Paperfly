@@ -1,15 +1,16 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from app.utils.key_generator import create_config_with_keys
+from paperfly.utils.key_generator import create_config_with_keys
 import logging
 import os
-import app.models
+
 
 db = SQLAlchemy()
 migrate = Migrate()
 
 def create_app():
+
     app = Flask(__name__)
     app.config.from_object('config')
 
@@ -24,8 +25,9 @@ def create_app():
     app.app_context().push()
 
     with app.app_context():
+        from paperfly.models import db as db_models
         app.logger.info('Crea la base de datos')
-        db.create_all()
+        db_models.create_all()
 
     app.logger.addHandler(logging.StreamHandler())
     app.logger.setLevel(logging.INFO)
@@ -33,15 +35,15 @@ def create_app():
     create_config_with_keys(logger=app.logger, root_path=app.root_path)
 
     # Registra el blueprint
-    from app.main import bp as main_execution_bp
+    from paperfly.main import bp as main_execution_bp
     app.register_blueprint(main_execution_bp, url_prefix='/')
 
     # Registra el blueprint
-    from app.notebook_execution import bp as notebook_execution_bp
+    from paperfly.notebook_execution import bp as notebook_execution_bp
     app.register_blueprint(notebook_execution_bp, url_prefix='/notebook')
 
     # Registra el blueprint de repositorio
-    from app.repo import bp as repo_bp
+    from paperfly.repo import bp as repo_bp
     app.register_blueprint(repo_bp, url_prefix='/repo')
 
     return app
