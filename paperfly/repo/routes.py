@@ -58,6 +58,7 @@ def pull_repo(repo_id):
         origin.pull()
         return jsonify(message="Actualización del repositorio completada."), 200
     except Exception as e:
+        current_app.logger.exception("Error on pull repo")
         return jsonify(message=str(e)), 500
 
 
@@ -84,7 +85,7 @@ def clone_or_pull_repo():
     local_path = data.get('local_path',default_local_path)
     username = data.get('username', None)
     password = data.get('password', None)
-    branch = data.get('branch', 'master')  # Por defecto usará la rama master si no se proporciona
+    branch = data.get('branch', 'main')  # Por defecto usará la rama master si no se proporciona
 
     # Asegurarse de que la carpeta 'repos' exista y ajustar el local_path f'{current_app.config["WORKSPACE"]}/repos
     if not os.path.exists('repos'):
@@ -106,6 +107,7 @@ def clone_or_pull_repo():
             db.session.commit()
             return jsonify(message="Repositorio clonado con éxito."), 200
         except Exception as e:
+            current_app.logger.exception("Error on clone repo")
             return jsonify(message=str(e)), 500
     else:  # Si el repositorio ya existe, hacemos un pull
         try:
@@ -115,4 +117,5 @@ def clone_or_pull_repo():
             origin.pull(branch)
             return jsonify(message="Actualización del repositorio completada."), 200
         except Exception as e:
+            current_app.logger.exception("Error on pull repo")
             return jsonify(message=str(e)), 500

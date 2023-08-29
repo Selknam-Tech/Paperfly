@@ -14,13 +14,16 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object('config')
 
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers.extend(gunicorn_logger.handlers)
+    app.logger.setLevel(logging.DEBUG)
+
     app.config['BASE_WORKSPACE'] = os.path.join(app.root_path, app.config['WORKSPACE']); 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.config['BASE_WORKSPACE'], 'app.sqlite')
 
     os.makedirs(os.path.join(app.config['BASE_WORKSPACE']),exist_ok=True)
 
-    gunicorn_logger = logging.getLogger('gunicorn.error')
-    app.logger.handlers = gunicorn_logger.handlers
+
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -32,8 +35,6 @@ def create_app():
         app.logger.info('Crea la base de datos')
         db_models.create_all()
 
-    app.logger.addHandler(logging.StreamHandler())
-    app.logger.setLevel(logging.INFO)
     with open(os.path.join(app.root_path,'version.txt'), 'r') as file:
         run_number = file.read().strip()
         app.logger.info('Paperfly Start - v0.1.4 | ' + run_number)
