@@ -2,7 +2,7 @@ from paperfly import db
 from paperfly.models import NotebookJob
 from paperfly.notebook_execution import bp
 import papermill as pm
-from flask import request, jsonify, current_app
+from flask import request, jsonify, current_app, send_from_directory
 from paperfly.utils.auth import require_token
 from nbconvert import HTMLExporter
 import json
@@ -82,3 +82,25 @@ def get_jobs():
         "updated_at": job.updated_at.isoformat()
     } for job in jobs]
     return jsonify(jobs_data), 200
+
+@bp.route('/job/<int:job_id>/html', methods=['GET'])
+def get_job_html(job_id):
+    """
+    Devuelve el archivo HTML generado para un job específico por ID.
+    """
+    # Comprobar si el job existe
+    job = NotebookJob.query.get_or_404(job_id)
+
+    # Asegúrate de que el job se haya completado con éxito
+    if job.status != "completed":
+        return jsonify(message="El job no se ha completado con éxito."), 400
+
+    # Definir la ruta del archivo HTML
+    html_output_path = os.path.join(current_app.config['BASE_WORKSPACE'], 'jobs', str(job.id), 'output.html')
+
+    # Comprobar si el archivo HTML existe
+    if not os.path.exists(html_output_path):
+        return jsonify(message="El archivo HTML no se encontró."), 404
+
+    # Devolver el archivo HTML
+    return send_from_directory(os.path.dirname(html_output_path), 'output.html'), 200

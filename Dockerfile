@@ -8,7 +8,7 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Install Git
-RUN apt-get update && apt-get install -y git
+RUN apt-get update && apt-get install -y git gcc python3-dev
 
 # Install the Python dependencies
 RUN pip install -r requirements.txt
