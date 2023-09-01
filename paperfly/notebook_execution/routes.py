@@ -2,7 +2,7 @@ from paperfly import db
 from paperfly.models import NotebookJob
 from paperfly.notebook_execution import bp
 import papermill as pm
-from flask import request, jsonify, current_app, send_from_directory
+from flask import request, jsonify, current_app, send_from_directory, url_for
 from paperfly.utils.auth import require_token
 from nbconvert import HTMLExporter
 import json
@@ -56,7 +56,10 @@ def execute_notebook():
         job.status = "completed"
         db.session.commit()
 
-        return jsonify(message="Notebook ejecutado con éxito.", output=notebook_data), 200
+        # Generar la URL para acceder al archivo HTML
+        html_url = url_for('get_job_html', job_id=job.id, _external=True)
+
+        return jsonify(message="Notebook ejecutado con éxito.", output_url = html_url, output_notebook=notebook_data), 200
 
     except Exception as e:
         job.status = "failed"
