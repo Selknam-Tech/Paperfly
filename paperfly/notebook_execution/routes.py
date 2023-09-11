@@ -57,7 +57,7 @@ def execute_notebook():
         db.session.commit()
 
         # Generar la URL para acceder al archivo HTML
-        html_url = url_for('get_job_html', job_id=job.id, _external=True)
+        html_url = url_for('notebook_execution.get_job_html', job_id=job.id, _external=True)
 
         return jsonify(message="Notebook ejecutado con éxito.", output_url = html_url, output_notebook=notebook_data), 200
 
