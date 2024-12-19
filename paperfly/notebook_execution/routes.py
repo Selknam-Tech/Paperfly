@@ -1,12 +1,12 @@
-import os
-import json
-from flask import Blueprint, request, jsonify, current_app, url_for
+from paperfly import db
+from paperfly.models import NotebookJob
+from paperfly.notebook_execution import bp
+import papermill as pm
+from flask import request, jsonify, current_app, send_from_directory, url_for
+from paperfly.utils.auth import require_token
 from nbconvert import HTMLExporter
-from papermill import execute_notebook
-from .models import db, NotebookJob  # Suponiendo que tu modelo está definido aquí
-from .decorators import require_token  # Decorador para manejar tokens
-
-bp = Blueprint('notebook_execution', __name__)
+import json
+import os
 
 @bp.route('/execute-notebook', methods=['POST'])
 @require_token
@@ -15,17 +15,19 @@ def execute_notebook():
     input_notebook = os.path.join(current_app.config['BASE_WORKSPACE'], data.get('input_notebook'))
     parameters = data.get('parameters', {})
 
-    # Validar que los parámetros sean un diccionario
-    if not isinstance(parameters, dict):
-        return jsonify(message="Los parámetros deben ser un diccionario válido."), 400
-
+    # Validaciones iniciales
     if not input_notebook or not os.path.isfile(input_notebook):
         return jsonify(message="El campo 'input_notebook' es obligatorio y debe ser un archivo válido."), 400
 
+    if not isinstance(parameters, dict):
+        return jsonify(message="Los parámetros deben ser un diccionario válido."), 400
+
+    # Crear job en la base de datos
     job = NotebookJob(input_notebook=input_notebook, output_notebook="", status="pending")
     db.session.add(job)
     db.session.commit()
 
+    # Preparar directorios de salida
     output_notebook_base = os.path.join(current_app.config['BASE_WORKSPACE'], 'jobs', str(job.id))
     os.makedirs(output_notebook_base, exist_ok=True)
     output_notebook = os.path.join(output_notebook_base, 'output.ipynb')
@@ -39,7 +41,7 @@ def execute_notebook():
         os.chdir(notebook_dir)
 
         # Ejecutar el notebook
-        execute_notebook(
+        pm.execute_notebook(
             input_path=input_notebook,
             output_path=output_notebook,
             parameters=parameters
@@ -49,16 +51,21 @@ def execute_notebook():
         html_exporter = HTMLExporter()
         (body, resources) = html_exporter.from_filename(output_notebook)
 
+        # Guardar el archivo HTML
         html_output_path = os.path.join(output_notebook_base, 'output.html')
         with open(html_output_path, 'w') as html_file:
             html_file.write(body)
 
+        # Leer el archivo .ipynb como JSON
         with open(output_notebook, 'r') as f:
             notebook_data = json.load(f)
 
+        # Actualizar el estado del job
         job.status = "completed"
+        job.output_notebook = output_notebook
         db.session.commit()
 
+        # Generar la URL del HTML
         html_url = url_for('notebook_execution.get_job_html', job_id=job.id, _external=True)
 
         return jsonify(
@@ -71,9 +78,10 @@ def execute_notebook():
         job.status = "failed"
         job.message = str(e)
         db.session.commit()
-        current_app.logger.exception("Error ejecutando notebook")
+        current_app.logger.exception("Error ejecutando el notebook")
 
-        return jsonify(message=str(e)), 500
+        return jsonify(message=f"Error: {str(e)}"), 500
+
 
 @bp.route('/jobs', methods=['GET'])
 @require_token
@@ -89,6 +97,7 @@ def get_jobs():
         "updated_at": job.updated_at.isoformat()
     } for job in jobs]
     return jsonify(jobs_data), 200
+
 
 @bp.route('/job/<int:job_id>/html', methods=['GET'])
 def get_job_html(job_id):
